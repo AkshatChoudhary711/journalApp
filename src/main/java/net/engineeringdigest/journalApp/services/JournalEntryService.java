@@ -30,8 +30,7 @@ public class JournalEntryService {
         JournalEntry entry = journalEntryRepository.save(myEntry);
         User user = userService.getByUsername(username);
         user.getJournals().add(entry);
-//        user.setUsername(null);
-        userService.saveEntry(user);
+        userService.saveOldEntry(user);
     }
 
     public void saveEntry(JournalEntry myEntry){
@@ -44,11 +43,21 @@ public class JournalEntryService {
         return journalEntryRepository.findById(id);
     }
 
-    public void deleteById(ObjectId id, String username){
-        User user =  userService.getByUsername(username);
-        user.getJournals().removeIf(x -> x.getId().equals(id));
-        userService.saveEntry(user);
-        journalEntryRepository.deleteById(id);
+    public boolean deleteById(ObjectId id, String username){
+        boolean removed = false;
+        try {
+            User user =  userService.getByUsername(username);
+            removed = user.getJournals().removeIf(x -> x.getId().equals(id));
+            if(removed){
+                userService.saveOldEntry(user);
+                journalEntryRepository.deleteById(id);
+            }
+        }catch (Exception e){
+            System.out.println(e);
+            throw new RuntimeException("An error occured while deleting the entry.",e);
+        }
+        return removed;
+
     }
 
 

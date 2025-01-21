@@ -28,6 +28,9 @@ public class UserService {
         user.setRoles(Arrays.asList("USER"));
         userRepository.save(user);
     }
+    public void saveOldEntry(User user){
+        userRepository.save(user);
+    }
 
     public User getByUsername(String username){
         return userRepository.findByUsername(username);

@@ -2,6 +2,7 @@ package net.engineeringdigest.journalApp.controllers;
 
 import net.engineeringdigest.journalApp.entities.JournalEntry;
 import net.engineeringdigest.journalApp.entities.User;
+import net.engineeringdigest.journalApp.repository.UserRepository;
 import net.engineeringdigest.journalApp.services.JournalEntryService;
 import net.engineeringdigest.journalApp.services.UserService;
 import org.bson.types.ObjectId;
@@ -24,19 +25,13 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/{username}")
-    public ResponseEntity<?> userById(@PathVariable String username ){
-        User result =  userService.getByUsername(username);
-        if(result!=null){
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        }return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+   @Autowired
+   private UserRepository userRepository;
 
-    @DeleteMapping("/{username}")
-    public ResponseEntity<?> deleteUserByUsername(@PathVariable String username){
-        if(userService.deleteByUsername(username)){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
+    @DeleteMapping()
+    public ResponseEntity<?> deleteUserByUsername(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        userRepository.deleteByUsername(authentication.getName());
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -45,12 +40,9 @@ public class UserController {
         Authentication authentication =SecurityContextHolder.getContext().getAuthentication();
 
         User old = userService.getByUsername(authentication.getName());
-
-
-            old.setUsername(newUser.getUsername());
-            old.setPassword(newUser.getPassword());
-            userService.saveEntry(old);
-
+        old.setUsername(newUser.getUsername());
+        old.setPassword(newUser.getPassword());
+        userService.saveEntry(old);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

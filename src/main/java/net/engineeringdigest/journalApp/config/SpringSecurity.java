@@ -25,7 +25,7 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
                 .anyRequest().permitAll()
                 .and()
                 .httpBasic();
-        http.csrf().disable();
+
     }
 
     @Override

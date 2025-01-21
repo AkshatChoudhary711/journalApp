@@ -34,13 +34,11 @@ public class JournalEntryController {
 
     @PostMapping("/{username}")
     public ResponseEntity<?> add(@RequestBody JournalEntry myEntry,@PathVariable String username){
-//        try{
+
             journalEntryService.saveEntry(myEntry,username);
 
             return new ResponseEntity<>(HttpStatus.CREATED);
-//        }catch (Exception e){
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
+
     }
 
     @GetMapping("/id/{id}")
